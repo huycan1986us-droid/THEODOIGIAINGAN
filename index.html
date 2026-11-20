@@ -332,7 +332,7 @@
             <li>Tạo 1 file <strong>Google Trang tính (Google Sheets)</strong> mới trên Google Drive của bạn (ví dụ đặt tên: <em>Du lieu Giai ngan 2026</em>).</li>
             <li>Trên thanh menu chọn <strong>Tiện ích mở rộng (Extensions) → Apps Script</strong>, xóa hết code mẫu, dán đoạn mã bên dưới vào và bấm <strong>Lưu (Ctrl + S)</strong>.</li>
             <li>Bấm <strong>Triển khai (Deploy) → Tùy chọn triển khai mới (New deployment)</strong> → chọn loại <strong>Ứng dụng web (Web app)</strong> → mục <em>Thực thi dưới tư cách</em> chọn <strong>Tôi (Me)</strong>, mục <em>Người có quyền truy cập</em> chọn <strong>Bất kỳ ai (Anyone)</strong> → bấm <strong>Triển khai</strong> và cấp quyền → sao chép <strong>URL ứng dụng web</strong>.</li>
-            <li>Dán URL vừa sao chép vào dòng <code class="px-1.5 py-0.5 bg-white border border-slate-200 rounded font-semibold text-blue-700">const DEFAULT_SYNC_URL = 'https://script.google.com/macros/s/AKfycbw9xrLxJ0JR1Ssn5VbAM6dS47p1Hr_18yNgc3O1xZ13qnyyc3cv5RRMsEUxhOY0xo2w/exec';</code> ở đầu phần &lt;script&gt; trong file <code class="px-1.5 py-0.5 bg-white border border-slate-200 rounded">index.html</code> trên GitHub (làm 1 lần duy nhất) rồi bấm <strong>Đẩy 29 dự án hiện tại lên Google Sheets</strong>. Từ đó mọi máy mở web sẽ tự đồng bộ cùng lúc!</li>
+            <li>Dán URL vừa sao chép vào dòng <code class="px-1.5 py-0.5 bg-white border border-slate-200 rounded font-semibold text-blue-700">const DEFAULT_SYNC_URL = '...';</code> ở đầu phần &lt;script&gt; trong file <code class="px-1.5 py-0.5 bg-white border border-slate-200 rounded">index.html</code> trên GitHub (làm 1 lần duy nhất) rồi bấm <strong>Đẩy 29 dự án hiện tại lên Google Sheets</strong>. Từ đó mọi máy mở web sẽ tự đồng bộ cùng lúc!</li>
           </ol>
           <pre id="appsScriptBlock" class="bg-slate-900 text-slate-100 rounded-lg p-3.5 text-xs overflow-x-auto leading-relaxed max-h-60"><code>function doGet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -536,7 +536,7 @@ git push -u origin main</code></pre>
     const STORAGE_KEY = 'vdt_giai_ngan_2026_v1';
     const SYNC_URL_STORAGE_KEY = 'vdt_sync_url_2026_v1';
     // Dán URL Web App từ Google Apps Script vào giữa 2 dấu nháy dưới đây (1 lần duy nhất) để mọi máy tự động đồng bộ:
-    const DEFAULT_SYNC_URL = 'https://script.google.com/macros/s/AKfycbwO2FFKcajH5hEI9n5hTD0MNBIu0P1b3QUyctB-iTU-YiYD6QPp3XK0v2RWJHQbIxQ2/exec';
+    const DEFAULT_SYNC_URL = 'https://script.google.com/macros/s/AKfycbw9xrLxJ0JR1Ssn5VbAM6dS47p1Hr_18yNgc3O1xZ13qnyyc3cv5RRMsEUxhOY0xo2w/exec';
 
     const SOURCES = [
       { key: 'cq26', label: 'Cấp quyền 2026', short: 'Cấp quyền 26', color: '#2563eb', bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
@@ -1749,7 +1749,8 @@ git push -u origin main</code></pre>
       state.syncing = true;
       updateSyncUI('syncing');
       try {
-        const res = await fetch(url, { method: 'GET', cache: 'no-store' });
+        const sep = url.includes('?') ? '&' : '?';
+        const res = await fetch(url + sep + '_t=' + Date.now(), { method: 'GET', redirect: 'follow' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
         if (data && Array.isArray(data.projects) && data.projects.length > 0) {
@@ -1784,6 +1785,7 @@ git push -u origin main</code></pre>
       try {
         const res = await fetch(url, {
           method: 'POST',
+          redirect: 'follow',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ projects: state.projects })
         });
